@@ -744,8 +744,8 @@ sampler = gen_sampler(sf, grid)
 sam(1)
 ```
 """
-function gen_sampler(sf::Gaussian, grid::RegularGrid; seed=0, extendsamples::Bool=false, CEoptions...)
-    C,padding = circulantembed(sf.covfun,grid; CEoptions...)
+function gen_sampler(sf::Gaussian, grid_given::RegularGrid; seed=0, extendsamples::Bool=false, CEoptions...)
+    C,padding = circulantembed(sf.covfun,grid_given; CEoptions...)
 
     getλs(C::NestedCirculant) = real.(fft(C.A))
     getλs(C::NestedSymmetricCirculant) = symmetrize(fct(C.A))
@@ -755,18 +755,21 @@ function gen_sampler(sf::Gaussian, grid::RegularGrid; seed=0, extendsamples::Boo
     sqrtλs=c.*sqrt.(λs)
     transform = plan_rfft(sqrtλs; flags=FFTW.MEASURE)
     seed_derived = Base.hash(seed)
+
     if extendsamples
-        extendedgrid = extend(grid,size(λs).-size(grid)) #full grid corresponding to the circulant matrix
-        mean = sf.mean.(extendedgrid)
+        extendedgrid = extend(grid_given,size(λs).-size(grid_given)) #full grid corresponding to the circulant matrix
+        extendedmean = sf.mean.(extendedgrid)
         function extendedsampler(i::Int) # function generates sample on the grid it was constructed at.
             extendedgrid
             Random.seed!(seed_derived+i) # initializes random number generator with seed equal to seed_derived+i
-            mean.+extendedsample_(sqrtλs; F=transform)
+            extendedmean.+extendedsample_(sqrtλs; F=transform)
         end
         return extendedsampler
     else
+        grid = grid_given
         mean = sf.mean.(grid)
         function sampler(i::Int) # function generates sample on the grid it was constructed at.
+            grid
             Random.seed!(seed_derived+i) # initializes random number generator with seed equal to seed_derived+i
             mean.+sample_(sqrtλs; F=transform)[axes(grid)...]
         end
@@ -797,21 +800,23 @@ end
 # assuming:
 #   all(size(sqrtλs).==size(points))
 #   all(sqrtλs.>=0.0)
-function sample_(sqrtλs::Array{Float64}, noise::Array{Float64}=randn(size(sqrtλs)); F=plan_rfft(sqrtλs))
+function sample_(sqrtλs::Array{Float64,N}, noise::Array{Float64,N}=randn(size(sqrtλs)); F=plan_rfft(sqrtλs)) where N
     # F contains (part of) the fft matrix (implicitly)
     complexdata = F*(sqrtλs.*noise)
     data = real.(complexdata).+imag.(complexdata) # Discrete Hartley transform
+    data::Array{Float64,N}
 end
 
 # internal function for efficient sampling given sqrtλs
 # assuming:
 #   all(size(sqrtλs).==size(points))
 #   all(sqrtλs.>=0.0)
-function extendedsample_(sqrtλs::Array{Float64}, noise::Array{Float64}=randn(size(sqrtλs)); F=plan_rfft(sqrtλs))
+function extendedsample_(sqrtλs::Array{Float64,N}, noise::Array{Float64,N}=randn(size(sqrtλs)); F=plan_rfft(sqrtλs)) where N
     # F contains (part of) the fft matrix (implicitly)
     complexdata = F*(sqrtλs.*noise)
     complexdata = rfft_to_fft(complexdata,iseven(size(sqrtλs,1)))
     data = real.(complexdata).+imag.(complexdata) # Discrete Hartley transform
+    data::Array{Float64,N}
 end
 
 end
