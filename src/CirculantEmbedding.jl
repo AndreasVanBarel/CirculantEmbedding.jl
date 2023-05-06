@@ -3,7 +3,13 @@
 
 Module for sampling stochastic fields using the circulant embedding (CE) method. 
 
-Most important function is [`CirculantEmbed.gen_sampler`](@ref), which yields a function that can sample a stochastic field with given properties on a given regular rectangular grid.
+Most important function is [`gen_sampler`](@ref), which yields a function that can sample a stochastic field with given properties on a given regular rectangular grid.
+
+See also [`CovFun`](@ref) and [`StochField`](@ref).
+
+See also [`NestedCirculant`](@ref) and [`NestedSymmetricCirculant`](@ref).
+
+See also the submodules [`Points`](@ref) and [`RegularGrids`](@ref).
 """
 module CirculantEmbedding
 
@@ -68,6 +74,8 @@ A covariance function that does not assume any special structure. It should be c
 Evaluating some `c::GeneralCovFun`is done using `c(p1::Point{N}, p2::Point{N})`.
 
 If `f` has structure that the subsequent algorithms should exploit, use [`HomogeneousCovFun`](@ref) or [`IsotropicCovFun`](@ref) instead.
+
+For some built in covariance functions, see [`exponentialcovariance`](@ref), [`rationalquadraticcovariance`](@ref), and [`materncovariance`](@ref).
 """
 struct GeneralCovFun <: CovFun
     fun::Function
@@ -89,7 +97,7 @@ This is handy if one wishes to exploit only the homogeneity but not the isotropy
 
 Evaluating some `c::HomogeneousCovFun` is done using `c(p1::Point{N},p2::Point{N})` or `c(Δp::Point{N})`.
 
-See also [`IsotropicCovFun`](@ref).
+See also [`IsotropicCovFun`](@ref), [`GeneralCovFun`](@ref).
 """
 struct HomogeneousCovFun <: CovFun #Homogeneous : only dependent on x-y
     fun::Function
@@ -108,7 +116,7 @@ and `n(Δp::Point{N})->Float64` is some norm.
 
 Evaluating some `c::IsotropicCovFun` is done using `c(p1::Point{N},p2::Point{N})` or `c(Δp::Point{N})` or `c(δ::Float64)`.
 
-See also [`HomogeneousCovFun`](@ref).
+See also [`HomogeneousCovFun`](@ref), [`GeneralCovFun`](@ref).
 """
 struct IsotropicCovFun <: CovFun #Isotropic : only dependent on ‖x-y‖ with ‖⋅‖ some norm that is invariant under sign changes in any one element of its input
     fun::Function
