@@ -5,7 +5,7 @@ Module for representing regular rectangular grids of point of any dimension, see
 """
 module RegularGrids
 
-using Points
+using ..Points
 
 export Point
 export RegularGrid

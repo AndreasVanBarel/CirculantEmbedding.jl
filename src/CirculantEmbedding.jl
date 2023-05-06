@@ -7,8 +7,21 @@ Most important function is [`CirculantEmbed.gen_sampler`](@ref), which yields a 
 """
 module CirculantEmbedding
 
-using RegularGrids
+# Points
+include("Points.jl")
+using .Points 
+export Points
+export Point
 
+# RegularGrids
+include("RegularGrids.jl")
+using .RegularGrids
+export RegularGrids
+export RegularGrid
+export getΔ
+export extend
+
+# CirculantEmbedding
 using FFTW
 using Random
 using LinearAlgebra

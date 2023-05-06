@@ -1,4 +1,3 @@
-using RegularGrids #for definition of the regular rectangular grids
 using CirculantEmbedding
 
 # Covariance
