@@ -724,7 +724,7 @@ eigvals(X::NestedSymmetricCirculant) = (symmetrize(fct(X.A)))[:]
 ### SAMPLER GENERATOR ###
 #########################
 """
-    gen_sampler(sf::StochField, grid::RegularGrid; seed=0, extendsamples::Bool=false, CEoptions...)->sampler::Function
+    gen_sampler(sf::StochField, grid::RegularGrid; seed=rand(UInt), extendsamples::Bool=false, CEoptions...)->sampler::Function
 
 Generates a sampler to sample the stochastic field `sf` on the grid `grid` using the circulant embedding (CE) method for Gaussian and Lognormal stochastic fields. For the other trivial stochastic field types, trivial methods are used; see [`StochField`](@ref). 
 
@@ -744,7 +744,7 @@ sampler = gen_sampler(sf, grid)
 sam(1)
 ```
 """
-function gen_sampler(sf::Gaussian, grid_given::RegularGrid; seed=0, extendsamples::Bool=false, CEoptions...)
+function gen_sampler(sf::Gaussian, grid_given::RegularGrid; seed=rand(UInt), extendsamples::Bool=false, CEoptions...)
     C,padding = circulantembed(sf.covfun,grid_given; CEoptions...)
 
     getλs(C::NestedCirculant) = real.(fft(C.A))
