@@ -147,14 +147,17 @@ show(io::IO, h::IsotropicCovFun) = print(io, "IsotropicCovFun $(h.fun) with norm
   * `norm` - the norm represented in the formula below by ‖⋅‖.
 Returns an `IsotropicCovFun` representing δ -> σ²exp(-δ/λ) and Δp -> σ²exp(-‖Δp‖/λ)
 """
-exponentialcovariance(λ::Real, σ::Real, norm) = IsotropicCovFun(δ->σ^2*exp(-δ/λ), norm)
+function exponentialcovariance(λ::Real, σ::Real, norm) 
+    exponentialcovfun(δ) = σ^2*exp(-δ/λ)
+    IsotropicCovFun(exponentialcovfun, norm)
+end
 
 """
     exponentialcovariance(λ::Real, σ::Real, p::Real=2)->IsotropicCovFun
 
 Equivalent to exponentialcovariance(λ, σ, Δp->norm(Δp,p)), i.e., p demands the p-norm be used.
 """
-exponentialcovariance(λ::Real, σ::Real, p::Real=2) = IsotropicCovFun(δ->σ^2*exp(-δ/λ), Δp->norm(Δp,p))
+exponentialcovariance(λ::Real, σ::Real, p::Real=2) = exponentialcovariance(λ, σ, Δp->norm(Δp,p))
 
 """
     rationalquadraticcovariance(α::Real, λ::Real, σ::Real, norm)->IsotropicCovFun
@@ -165,14 +168,17 @@ exponentialcovariance(λ::Real, σ::Real, p::Real=2) = IsotropicCovFun(δ->σ^2*
   * `norm` - the norm represented in the formula below by ‖⋅‖.
 Returns an `IsotropicCovFun` representing δ -> σ²(1+δ²/2αλ²)^(-α) and Δp -> σ²(1+‖Δp‖²/2αλ²)^(-α)
 """
-rationalquadraticcovariance(α::Real, λ::Real, σ::Real, norm) = IsotropicCovFun(δ->σ^2*(1+(δ/λ)^2/(2α))^-α, norm)
+function rationalquadraticcovariance(α::Real, λ::Real, σ::Real, norm) 
+    rationalquadraticcovfun(δ) = σ^2*(1+(δ/λ)^2/(2α))^-α
+    IsotropicCovFun(rationalquadraticcovfun, norm)
+end
 
 """
     rationalquadraticcovariance(α::Real, λ::Real, σ::Real, p::Real=2)->IsotropicCovFun
 
 Equivalent to rationalquadraticcovariance(α, λ, σ, Δp->norm(Δp,p)), i.e., p demands the p-norm be used.
 """
-rationalquadraticcovariance(α::Real, λ::Real, σ::Real, p::Real=2) = IsotropicCovFun(δ->σ^2*(1+(δ/λ)^2/(2α))^-α, Δp->norm(Δp,p))
+rationalquadraticcovariance(α::Real, λ::Real, σ::Real, p::Real=2) = rationalquadraticcovariance(α, λ, σ, Δp->norm(Δp,p))
 
 """
     materncovariance(v::Real, λ::Real, σ::Real, norm)->IsotropicCovFun
@@ -183,19 +189,20 @@ rationalquadraticcovariance(α::Real, λ::Real, σ::Real, p::Real=2) = Isotropic
   * `norm` - the norm represented in the formula below by ‖⋅‖.
 Returns an `IsotropicCovFun` representing the Matérn coveriance function, see [Wikipedia](https://en.wikipedia.org/wiki/Matérn_covariance_function), with parameters as described above.
 """
-function materncovariance(v::Real, λ::Real, σ::Real, norm) #v is a smoothness parameter, λ is a correlation length metric
-    isinf(v) && ( return IsotropicCovFun(Δ->σ^2*exp(-(Δ/λ)^2/2)))
-    Γ = gamma; Kᵥ(x) = besselk(v,x);
-    function materncovfun(Δp)
-        δ = norm(Δp)
+function materncovariance(ν::Real, λ::Real, σ::Real, norm) #v is a smoothness parameter, λ is a correlation length metric
+    Γ = gamma; Kᵥ(x) = besselk(ν,x);
+    function materncovfun(δ)
+        if isinf(ν)
+            return σ^2*exp(-(δ/λ)^2/2)
+        end
         if δ>1e-8 # normal evaluation
-            return σ^2*2.0^(1-v)/Γ(v)*(√(2v)δ/λ)^v*Kᵥ(√(2v)δ/λ)
+            return σ^2*2.0^(1-ν)/Γ(ν)*(√(2ν)δ/λ)^ν*Kᵥ(√(2ν)δ/λ)
         else
             return σ^2 # first term of the Taylor series expansion
-            #return σ^2*(1 + v/(2-2v)*(d/ρ)^2 + v^2/(8(2-3v+v^2))*(d/ρ)^4)  # fourth order Taylor expansion
+            #return σ^2*(1 + ν/(2-2ν)*(d/ρ)^2 + ν^2/(8(2-3ν+ν^2))*(d/ρ)^4)  # fourth order Taylor expansion
         end
     end
-    IsotropicCovFun(materncovfun)
+    IsotropicCovFun(materncovfun, norm)
 end
 
 """

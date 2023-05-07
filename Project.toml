@@ -1,7 +1,7 @@
 name = "CirculantEmbedding"
 uuid = "5331e087-d685-492e-a253-3fda24603da3"
 authors = ["Andreas Van Barel <andreas.vanbarel@gmail.com>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
