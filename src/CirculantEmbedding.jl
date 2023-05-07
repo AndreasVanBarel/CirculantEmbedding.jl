@@ -137,7 +137,7 @@ show(io::IO, h::IsotropicCovFun) = print(io, "IsotropicCovFun $(h.fun) with norm
 (K::HomogeneousCovFun)(x,y) = K(x-y)::Real
 (K::IsotropicCovFun)(δ::Real) = K.fun(δ)::Real
 (K::IsotropicCovFun)(Δ) = K(K.norm(Δ))::Real
-(K::IsotropicCovFun)(x,y) = K(x-y)::Real
+(K::IsotropicCovFun)(x,y) = K(K.norm(x-y))::Real # can't do K(x-y), since x-y might be Real.
 
 """
     exponentialcovariance(λ::Real, σ::Real, norm)->IsotropicCovFun
