@@ -747,7 +747,7 @@ Returns a function `sampler` with signature
 
     sampler(i::Int) -> Array{Float64, ndims(grid)}
 
-which is used to generate the `i`-th sample. The samples are reproducible since sampler(i) always returns the same result. The optional `seed` argument of `gen_sampler` allows for the creation of different independent samplers.  
+which is used to generate the `i`-th sample. The samples are reproducible since `sampler(i)` always returns the same result. The optional `seed` argument of `gen_sampler` allows for the creation of different independent samplers.  
 
 The CE method first attempts to embed the covariance matrix in a circulant matrix using `circulantembed(sf.covfun,grid; CEoptions)`, i.e., searching an appropriate amount of grid padding such that the resulting circulant matrix is positive semidefinite. This part can be tuned using `CEoptions`. The sampler returns samples on the full extended grid if `extendsamples=true` is passed. A reference to the grid can be found using `sampler.extendedgrid`. 
 
@@ -756,7 +756,7 @@ The CE method first attempts to embed the covariance matrix in a circulant matri
 sf = Gaussian(exponentialcovariance(0.3,0.5))
 grid = RegularGrid(33,33)
 sampler = gen_sampler(sf, grid)
-sam(1)
+sampler(1)
 ```
 """
 function gen_sampler(sf::Gaussian, grid_given::RegularGrid; seed=rand(UInt), extendsamples::Bool=false, CEoptions...)
