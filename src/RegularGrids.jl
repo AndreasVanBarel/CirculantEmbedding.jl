@@ -63,11 +63,11 @@ getindex(m::RegularGrid{N}, is::Vararg{Int,N}) where N = Point([m.ranges[d][is[d
 
 ### Printing
 function show(io::IO, m::MIME"text/plain", grid::RegularGrid{N}) where N
-    s = prod("$(grid.ranges[i].len)×" for i = 1:N-1)*"$(grid.ranges[end].len) $(typeof(grid)) for "
-    s *= prod("[$(grid.ranges[i].start),$(grid.ranges[i].stop)]×" for i = 1:N-1)*"[$(grid.ranges[end].start),$(grid.ranges[end].stop)]"
+    s = prod("$(grid.ranges[i].len)×" for i = 1:N-1; init="")*"$(grid.ranges[end].len) $(typeof(grid)) for "
+    s *= prod("[$(grid.ranges[i].start),$(grid.ranges[i].stop)]×" for i = 1:N-1; init="")*"[$(grid.ranges[end].start),$(grid.ranges[end].stop)]"
     print(io, s)
 end
-show(io::IO, m::Type{MIME"text/plain"}, grid::RegularGrid{N}) where N = print(prod("$(grid.ranges[i].len)×" for i = 1:N-1)*"$(grid.ranges[end].len) $(typeof(grid))")
+show(io::IO, m::Type{MIME"text/plain"}, grid::RegularGrid{N}) where N = print(prod("$(grid.ranges[i].len)×" for i = 1:N-1; init="")*"$(grid.ranges[end].len) $(typeof(grid))")
 show(io::IO, grid::RegularGrid) = show(io, MIME"text/plain", grid)
 
 ### extending, i.e., padding
