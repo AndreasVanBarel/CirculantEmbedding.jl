@@ -26,7 +26,7 @@ help> CirculantEmbedding
 ```
 where you get the `help>` prompt by hitting `?` as the first character of the line.
 
-Now follows example code outlining the basic usage. A Gaussian stochastic field is described and a sampler for it is constructed.
+The following example outlines the basic usage of the package. We describe a Gaussian stochastic field a construct a sampler for it.
 
 ```julia
 # Define the covariance function
