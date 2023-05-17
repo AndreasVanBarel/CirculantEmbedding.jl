@@ -9,7 +9,7 @@ This is installed using the standard tools of the [package manager](https://juli
 ```julia
 pkg> add https://github.com/AndreasVanBarel/CirculantEmbedding.jl.git
 ```
-where you get the `pkg>` prompt by hitting `]` as the first character of the line.
+You get the `pkg>` prompt by hitting `]` as the first character of the line.
 
 ## Usage
 
