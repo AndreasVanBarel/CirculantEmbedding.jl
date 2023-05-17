@@ -1,6 +1,6 @@
 # CirculantEmbedding.jl
 
-Julia package for sampling Gaussian stochastic fields using the circulant embedding method. The package also allows the so-called extended samples to be returned. By cutting or extracting different parts, these can be used to generate multiple weakly correlated samples of the stochastic field on the original small grid with just a single circulant embedding calculation. See Section 3.3 in [my PhD (2021)](https://lirias.kuleuven.be/retrieve/638063) for more information. 
+Julia package for sampling Gaussian stochastic fields of arbitrary dimension using the circulant embedding method. The package also allows the so-called extended samples to be returned. By cutting or extracting different parts, these can be used to generate multiple weakly correlated samples of the stochastic field on the original small grid with just a single circulant embedding calculation. See Section 3.3 in [my PhD (2021)](https://lirias.kuleuven.be/retrieve/638063) for more information. 
 
 ## Installation
 
@@ -26,7 +26,7 @@ help> CirculantEmbedding
 ```
 where you get the `help>` prompt by hitting `?` as the first character of the line.
 
-The following example outlines the basic usage of the package. We describe a Gaussian stochastic field a construct a sampler for it.
+The following example outlines the basic usage of the package. We describe a Gaussian stochastic field and construct a sampler for it.
 
 ```julia
 # Define the covariance function
@@ -42,7 +42,7 @@ grid = RegularGrid(257,257)
 # Generate a sampler (with random seed)
 sampler = gen_sampler(g, grid)
 
-# Taking a sample
+# Take a sample
 sample = sampler(1)
 ```
 
@@ -52,7 +52,7 @@ It is also possible to generate samples on the full extended grid:
 # Generate a sampler (this time with given seed)
 sampler = gen_sampler(g, grid; seed=0, extendsamples=true)
 
-# Taking a sample
+# Take a sample
 sample = sampler(1)
 
 # Access to the extendedgrid
@@ -69,10 +69,17 @@ heatmap(nodes_x, nodes_y, sample')
 surface(nodes_x, nodes_y, sample')
 ```
 
+Stochastic fields of arbitrary dimension can be generated:
+
+```julia
+grid4d = RegularGrid(16,16,16,16) # 4d grid
+sampler4d = gen_sampler(g, grid4d)
+```
+
 The package is efficient in the sense that it does not explicity generate or store the (nested) circulant matrices. However, for research purposes, this package allows one to inspect and play with these objects:
 
 ```julia
-# Producing the circulant matrix that embeds the covariance matrix:
+# Produce the circulant matrix that embeds the covariance matrix:
 C, padding = circulantembed(covfun,grid; print=1) 
 ```
 
